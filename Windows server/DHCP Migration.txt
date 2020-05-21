@@ -1,0 +1,38 @@
+
+on Destination Server
+install-windowsfeature migration
+
+#Generate package for source machine
+cd \windows\system32\servermigrationtools
+.\smigdeploy.exe /package /architecture amd64 /os win 12R2 /path C:\Migrationfolder
+
+copy-item -path C:\Migrationfolder\SMT.... -destination \\sorceserver\c$\migrationfolder -recurse
+
+
+#On Source server
+#smigdeploy reuires .Net 3.5 
+install-feature -name net-framework-core -source D:\sources\sxs
+
+#Register the SM tools
+.\SMT.....\smigdeploy.exe
+
+#importsmig cmdlet to session
+add-pssnapin microsoft.windows.servermanager.migration
+
+#stop dhcp service
+stop-service -name dhcpserver
+
+#show roles/features that can be migrated
+get-smigserverfeature
+
+#create migration store
+export-smigserversetting -featureid dhcp -path C:\Migrationfolder\migration -verbose
+
+#copy migration store to destination server
+copy-item -path C:\Migrationfolder\migration -destination \\destinationserver\c$\migrationfolder\migration -recurse
+
+#On Destination server
+add-pssnapin microsoft.windows.servermanager.migration
+import-smigserverfeature -featureid dhcp -path C:\Migrationfolder\migration -verbose -force
+
+#add DHCP management tools

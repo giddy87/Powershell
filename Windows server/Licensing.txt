@@ -1,0 +1,7 @@
+#using cmd
+
+dism /online /get-targeteditions
+dism /online /set-edition:serverdatacenter /productkey:xxxx-xxxx /AcceptEula
+
+slmgr /dlv #to check activation status
+slgmr /ato #to activate product key

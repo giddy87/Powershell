@@ -1,0 +1,3 @@
+initialize-disk -number 2 -partitionstyle gpt
+new-partition -disknmuber 2 -usemaximumsize -driveletter U
+Format-volume -driveletter I -filesystem Refs -allocationunitsize 4096 -newfilesystemlabel "User data"
